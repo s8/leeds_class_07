@@ -1,21 +1,36 @@
-import * as d3 from "https://cdn.skypack.dev/d3@7";
+
+const button = document.querySelector('button');
+button.addEventListener('click', () => {
+  const audioCtx = new AudioContext();
+  console.log('button!');
+  const audioElement = new Audio('sine.wav');
+  audioElement.loop = true;
+  audioElement.addEventListener('loadeddata', () => {
+      console.log('loaded')
+      const track = audioCtx.createMediaElementSource(audioElement);
+      const gainNode = audioCtx.createGain();
+      track.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      const playButton = document.querySelector('#button');
+      gainNode.gain.value=0.2;
+      document.body.addEventListener('click', function() {
+      // check if context is in suspended state (autoplay policy)
+      if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+          console.log("resume");
+      }
+      
+      audioElement.play();
+  });
+  });
+  
 
 
-d3.json("wealth_health.json").then(function(data) {
-    console.log(data); // use this to check the data in the console
-    const maxIncome = d3.max(data, (d)=>d.income);
-    const maxLifeExpectancy = d3.max(data, (d)=> d.lifeExpectancy);
+}, false);
 
-    console.log("maxIncome: ", maxIncome);
-    console.log("maxLifeExpectancy ", maxLifeExpectancy);
-
-    const sorted = data.slice().sort((a, b) => d3.descending(a.income, b.income))
-    var scale = d3.scaleLinear().domain([0,maxIncome]).range([0,500]);
-
-    d3.select("body").append("svg").attr("style","height: 1800px; width: 1000px;");
+// button.querySelector('#info').addEventListener('click', function() {
+//     const audioCtx = new AudioContext();
+// });
 
 
-    
-
-
-})
+// const audioCtx = new AudioContext();
